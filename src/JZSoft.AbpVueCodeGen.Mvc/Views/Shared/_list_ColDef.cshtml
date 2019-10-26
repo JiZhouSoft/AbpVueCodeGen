@@ -1,0 +1,27 @@
+﻿@model ParamDef
+@{
+    var skipNames = "tenantId,id";
+}
+@if (!skipNames.Split(',').Contains( Model.Name))
+{
+    Model.Name = Model.Name.ToUpperStart();
+    var lName = Model.Name.ToLowerStart();
+    <el-table-column :label="L('@Html.Raw(Model.Name)')" prop="@Html.Raw(lName)"
+                     sortable="custom" align="center" 
+                     :class-name="getSortClass('@Html.Raw(lName)')">
+        <template slot-scope="scope">
+            @if (Model.Type == "enum")
+            {
+            <span>{{ getEnumValue(@(Html.Raw(lName))Options,scope.row.@Html.Raw(lName)) }}</span>
+            }
+            else if (Model.Type == "date-time")
+            {
+                <span>{{ dateformat(scope.row.@Html.Raw(lName))  }}</span>
+            }
+            else
+            {
+                <span>{{ scope.row.@Html.Raw(lName) }}</span>
+            } 
+        </template>
+    </el-table-column>
+}

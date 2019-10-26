@@ -1,0 +1,76 @@
+﻿@{
+    Layout = null;
+}
+@model PartCodeResult
+@if (Model.TemplateName == TemplateType.QueryParamsDef)
+{
+    foreach (var item in Model.Properties)
+    {
+        var pName = item.Name.ToLowerStart();
+        if (!"skipCount,sorting,maxResultCount".Split(',').Contains(pName))
+        {
+            if (item.Type == "string")
+            {
+                if (item.Format == "date-time")
+                {
+                    @Html.Raw(pName + ": null,\r\n")
+                }
+                else
+                {
+                    @Html.Raw(pName + ": '' ,\r\n")
+                }
+            }
+            else
+            {
+                @Html.Raw(pName + ": null ,\r\n")
+            }
+        }
+    }
+}
+else if (Model.TemplateName == TemplateType.QueryParamsQueryCode)
+{
+    var paramsList = new List<string>();
+    @foreach (var item in Model.Properties)
+    {
+        var p = item.Name.ToLowerStart();
+        if (p == "skipCount")
+        {
+            paramsList.Add($"this.queryParams." + p.ToLowerStart() + "()");
+        }
+        else
+        {
+            paramsList.Add($"this.queryParams." + p.ToLowerStart());
+        }
+    }
+    @Html.Raw(string.Join(",\r\n                                        ", paramsList))
+}
+else if (Model.TemplateName == TemplateType.QueryParamsDwonloadCode)
+{
+    var paramsList = new List<string>();
+    @foreach (var item in Model.Properties)
+    {
+        var p = item.Name.ToLowerStart();
+        if (!"skipCount,sorting,maxResultCount".Split(',').Contains(p)) 
+        {
+            paramsList.Add($"this.queryParams." + p.ToLowerStart());
+        }
+    }
+    @Html.Raw(string.Join(",\r\n                                        ", paramsList))
+}
+else if (Model.TemplateName == TemplateType.FormItems)
+{
+    <el-form-item label="ID" v-if="(editModel.id)?true:false" prop="id">
+        <label>{{editModel.id}} </label>
+    </el-form-item>
+    @foreach (var item in Model.Properties)
+    {
+        @await Html.PartialAsync("_list_FrmItem", item)
+    }
+}
+else if (Model.TemplateName == TemplateType.ListItem)
+{
+    foreach (var item in Model.Properties)
+    {
+        @await Html.PartialAsync("_list_ColDef", item)
+    }
+}

@@ -1,0 +1,1 @@
+dotnet JZSoft.CodeGen.Mvc.dll --server.urls "http://localhost:8080"

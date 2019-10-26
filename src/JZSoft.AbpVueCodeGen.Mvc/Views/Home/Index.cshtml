@@ -1,0 +1,193 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model GenCodeConfigInput
+<br />
+<div class="row right">
+    筛选
+    <input type="text" id="TagFilter" />
+</div>
+<table class="table" id="tdTags">
+    <thead>
+        <tr>
+            <th>Tags</th>
+            <th>ApiPath</th>
+            <th>Method</th>
+            <th>RequestInput</th>
+            <th>ResponseOutput</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<div class="modal fade" id="configModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    配置页面API
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form action="home/GenCode" target="_blank" method="post" id="gencode">
+                    <div class="form-group">
+                        <label for="TagName">TagName</label>
+                        <input type="text" class="form-control" name="TagName" id="TagName" placeholder="TagName" />
+                    </div>
+                    <div class="form-group">
+                        <label for="ListMethod">ListMethod</label>
+                        <select class="form-control" name="ListMethod" id="ListMethod">
+                        </select>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.ListDtoName)
+                            @Html.EditorFor(o => o.ListDtoName)
+
+                            @Html.LabelFor(o => o.ListItemsDtoName)
+                            @Html.EditorFor(o => o.ListItemsDtoName)
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.ListParamsJsonPath)
+                            <input type="text" value="ListApi.parameters" id="ListParamsJsonPath" name="ListParamsJsonPath" />
+                            <button type="button" data-target="ListParamsJsonPath" class="btn btn-info tryJson">Try</button>
+                            @Html.LabelFor(o => o.ListPropertiesJsonPath)
+                            <input type="text" value="ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refData[1].value" id="ListPropertiesJsonPath" name="ListPropertiesJsonPath" />
+                            <button type="button" data-target="ListPropertiesJsonPath" class="btn btn-info tryJson">Try</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="CreateMethod">CreateMethod</label>
+                        <select class="form-control" name="CreateMethod" id="CreateMethod">
+                        </select>
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.CreateDtoName)
+                            @Html.EditorFor(o => o.CreateDtoName)
+
+                            @Html.LabelFor(o => o.CreateParamsJsonPath)
+                            <input type="text" value="CreateApi.parameters[0][3].value[0].value.refData[2].value" id="CreateParamsJsonPath" name="CreateParamsJsonPath" />
+                            <button type="button" data-target="CreateParamsJsonPath" class="btn btn-info tryJson">Try</button>
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="UpdateMethod">UpdateMethod</label>
+                        <select class="form-control" name="UpdateMethod" id="UpdateMethod">
+                        </select>
+
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.UpdateDtoName)
+                            @Html.EditorFor(o => o.UpdateDtoName)
+                            @Html.LabelFor(o => o.UpdateParamsJsonPath)
+                            <input type="text" value="UpdateApi.parameters[0][3].value[0].value.refData[2].value" id="UpdateParamsJsonPath" name="UpdateParamsJsonPath" />
+                            <button type="button" data-target="UpdateParamsJsonPath" class="btn btn-info tryJson">Try</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="DeleteMethod">DeleMethod</label>
+                        <select class="form-control" name="DeleteMethod" id="DeleteMethod">
+                        </select>
+
+                        <div class="form-group">
+                            @Html.LabelFor(o => o.DeleteApiJsonPath)
+                            @Html.EditorFor(o => o.DeleteApiJsonPath)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="JsonData">JsonData</label>
+                        <textarea name="JsonData" id="JsonData" style="width:100%"></textarea>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    关闭
+                </button>
+                <button type="button" id="btnSubmit" class="btn btn-primary">
+                    提交更改
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="tryJson" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 900px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    Json测试
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form id="TryGetProps">
+                    <div class="form-group">
+                        <label for="ApiPath">ApiPath</label>
+                        <input type="text" name="ApiPath" id="TryApiPath" style="width:100%" />
+                    </div>
+                    <div class="form-group">
+                        <label for="tryJsonData">JsonData</label>
+                        <textarea name="tryJsonData" id="tryJsonData" style="width:100%"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Target</label>:
+
+                        <input type="radio" id="radJson" name="TemplateName" value="Json" checked="checked" />
+                        <label for="radJson">Json</label>
+                        <input type="radio" name="TemplateName" id="radListItem" value="ListItem" />
+                        <label for="radListItem">ListItems</label>
+                        <input type="radio" name="TemplateName" id="radFormItems" value="FormItems" />
+                        <label for="radFormItems">FormItems</label>
+                        <input type="radio" name="TemplateName" id="radQueryParamsDef" value="QueryParamsDef" />
+                        <label for="radQueryParamsDef">QueryParamsDef</label>
+                        <input type="radio" name="TemplateName" id="radQueryParamsQueryCode" value="QueryParamsQueryCode" />
+                        <label for="radQueryParamsQueryCode">QueryParamsQueryCode</label>
+                        <button type="button" class="btn btn-info" id="btnTryGetProp">Try</button>
+                    </div>
+                    <div class="form-group">
+                        <label for="Result">Result</label>
+                        <textarea name="Result" id="Result" style="width:100%"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+@section Scripts{
+    <script>
+        $(function () {
+            var apiUrl = "@JZSoft.AbpVueCodeGen.Mvc.Controllers.HomeController.ApiJsonUrl";
+            getDef(apiUrl);
+            bindPage();
+            $(".tryJson").click(function (){
+                $("#tryJsonData").val($("#JsonData").val());
+                //var path = $(this).parent().find("input").val()
+                var path = $("#" + $(this).attr("data-target")).val();
+                $("#TryApiPath").val(path);
+                tryGetProp(path,true);
+            })
+            $("#btnTryGetProp").click(function () {
+               var path=  $("#TryApiPath").val();
+                console.log(path); 
+                var templateName = $("#TryGetProps input[type=radio]:checked").val();
+                tryGetProp(path,false,templateName)
+            });
+        })
+
+
+    </script>
+}
