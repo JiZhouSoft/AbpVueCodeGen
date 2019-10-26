@@ -50,7 +50,7 @@ else if (Model.TemplateName == TemplateType.QueryParamsDwonloadCode)
     @foreach (var item in Model.Properties)
     {
         var p = item.Name.ToLowerStart();
-        if (!"skipCount,sorting,maxResultCount".Split(',').Contains(p)) 
+        if (!"skipCount,sorting,maxResultCount".Split(',').Contains(p))
         {
             paramsList.Add($"this.queryParams." + p.ToLowerStart());
         }
@@ -72,5 +72,12 @@ else if (Model.TemplateName == TemplateType.ListItem)
     foreach (var item in Model.Properties)
     {
         @await Html.PartialAsync("_list_ColDef", item)
+    }
+}
+else if (Model.TemplateName == TemplateType.Filters)
+{
+    foreach (var item in Model.Properties)
+    {
+        @await Html.PartialAsync("_Filters", item)
     }
 }

@@ -1,0 +1,43 @@
+﻿@model ParamDef
+@{
+    var skipNames = "filter,skipCount,sorting,maxResultCount".Split(',');
+    var lName = Model.Name.ToLowerStart();
+    var uName = Model.Name.ToUpperStart();
+    if (!skipNames.Contains(lName))
+    { 
+    <el-form-item v-if="showAdvFilter" :label="L('@Html.Raw(uName)')" prop="@Html.Raw(lName)">
+        @switch (Model.Type)
+        {
+            case "date-time":
+                    <el-date-picker v-model="queryParams.@Html.Raw(lName)"
+                                    type="date"
+                                    placeholder="选择日期">
+                    </el-date-picker>
+                break;
+            case "string":
+                    <el-input v-model='queryParams.@Html.Raw(lName)' />
+                break;
+            case "boolean":
+                    <el-checkbox v-model="queryParams.@Html.Raw(lName)"></el-checkbox>
+                break;
+            case "number":
+            case "integer":
+                    <el-input type="number" v-model='queryParams.@Html.Raw(lName)' />
+                break;
+            case "enum":
+                <el-select v-model="queryParams.@Html.Raw(lName)" placeholder="请选择">
+                    <el-option v-for="item in @(Html.Raw(lName))Options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                    </el-option>
+                </el-select>
+                break;
+            default:
+                <!--复杂属性，请自己实现    @Model.Type-->
+                <el-input type="text" v-model='queryParams.@Html.Raw(lName)' />
+                break;
+        }
+    </el-form-item> 
+    }
+}

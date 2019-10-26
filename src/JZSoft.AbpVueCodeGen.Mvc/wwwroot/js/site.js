@@ -219,12 +219,11 @@ function bindPage() {
     }
 }
 
-function JsonPath(json, path) {
-    $.post('/home/TestJsonPath', { Json: JSON.stringify(json), JsonPath: path }, function (data) {
-        alert(JSON.stringify(data));
-        console.log(data);
-    });
-}
+//function JsonPath(json, path) {
+//    $.post('/home/TestJsonPath', { Json: JSON.stringify(json), JsonPath: path }, function (data) {
+//        alert(JSON.stringify(data)); 
+//    });
+//}
 Array.prototype.last = function () {
     var len = this.length
     return this[len - 1];
@@ -263,18 +262,25 @@ function tryGetProp(path, modal, templateName) {
             JsonPath: path,
             templateName: 'Json'
         }, function (data) {
-            console.log(data);
-            $("#Result").val(JSON.stringify(data));
+                console.log(data);
+                if (data.error) { 
+                    $("#Result").val(data.error);
+                } else {
+                    $("#Result").val(JSON.stringify(data));
+                }
+        
         });
     } else {
         var jsonStr = $("#tryJsonData").val();
         console.log("1")
         $.post('/home/GetPartCode', { Json: jsonStr, JsonPath: path, templateName: templateName }, function (data) {
-            console.log(data); 
-            console.log("3")
-            $("#Result").val(data);
-        });
-        console.log("2")
+            console.log(data);  
+            if (data.error) {
+                $("#Result").val(data.error);
+            } else { 
+                $("#Result").val(data);
+            }
+        }); 
     }
    
 

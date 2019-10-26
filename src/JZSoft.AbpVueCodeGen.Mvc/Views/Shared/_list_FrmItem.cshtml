@@ -1,16 +1,11 @@
 ﻿@model ParamDef
-
-@if (Model.Name == "id")
-{
-    @*<el-form-item label="ID" v-if="(editModel.id)?true:false" prop="@Model.Name">
-            <el-input type="hidden" v-model='editModel.id' />
-        </el-form-item>*@
-}
-else
-{
-    Model.Name = Model.Name.ToUpperStart();
+@{
+    var UName = Model.Name.ToUpperStart();
     var lName = Model.Name.ToLowerStart();
-    <el-form-item :label="L('@Html.Raw(Model.Name)')" prop="@Html.Raw(lName)">
+} 
+@if (lName != "id")
+{ 
+    <el-form-item :label="L('@Html.Raw(UName)')" prop="@Html.Raw(lName)">
         @switch (Model.Type)
         {
             case "date-time":
@@ -40,7 +35,7 @@ else
                 break;
             default:
                 <!--复杂属性，请自己实现    @Model.Type-->
-                <el-input type="text" v-model='editModel.@Html.Raw(lName)' />
+                <el-input type="text" v-model='editModel.@Html.Raw(lName)' /> 
                 break;
         }
     </el-form-item>

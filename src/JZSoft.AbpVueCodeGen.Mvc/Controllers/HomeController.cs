@@ -25,9 +25,10 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 JToken token = JToken.Parse(input.Json);
                 return new JsonResult(token.SelectToken(input.JsonPath));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new Exception("JsonPath Error");
+                var errorResult = new { error = "JsonPath Error : " + ex.Message };
+                return new JsonResult(errorResult);
             }
         }
 
@@ -41,7 +42,8 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             }
             catch (Exception ex)
             {
-                throw new Exception("JsonPath Error" + ex.Message);
+                var errorResult = new { error = "JsonPath Error : " + ex.Message };
+                return new JsonResult(errorResult);
             }
         }
         public JsonResult TryGetProps(PartCodeInnput input)
@@ -51,9 +53,10 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 PartCodeResult result = GetPartResult(input);
                 return new JsonResult(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return new JsonResult("Convert Error");
+                var errorResult = new { error = "JsonPath Error : " + ex.Message };
+                return new JsonResult(errorResult);
             }
         }
         private static PartCodeResult GetPartResult(PartCodeInnput input)
@@ -109,11 +112,20 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             {
                 return View();
             }
-            var ErrorDict = new Dictionary<string, List<string>>();
-            var output = GetConfig(input, ErrorDict);
-            ViewBag.ErrorDict = ErrorDict;
-            Response.ContentType = "text/plian;charset=utf-8";
-            return View(output);
+            try
+            {
+                var ErrorDict = new Dictionary<string, List<string>>();
+                var output = GetConfig(input, ErrorDict);
+                ViewBag.ErrorDict = ErrorDict;
+                Response.ContentType = "text/plian;charset=utf-8";
+                return View(output);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
         }
 
 
@@ -269,7 +281,7 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 var UpdateDtoName = Model.SelectToken("$.UpdateApi.parameters[0][3].value[0].value.refName").ToString();
                 if (!string.IsNullOrWhiteSpace(input.UpdateDtoName))
                 {
-                    dtoNames.Add(UpdateDtoName); 
+                    dtoNames.Add(UpdateDtoName);
                 }
                 updateapi.RequestDtoName = UpdateDtoName;
                 var UpdateApiName = Model["UpdateApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
