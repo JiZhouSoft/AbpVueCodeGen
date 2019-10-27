@@ -142,12 +142,12 @@ function bindPage() {
     })
     $("#tdTags tbody").on("click", ".show_config", function () {
         var tag = $(this).attr("data-tag");
-        $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleteMethod").empty()
+        $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleteMethod,#GetForUpdateMethod").empty()
         var frm = $("form");
         frm.find("#TagName").val(tag);
         var allTags = [];
 
-        $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod").append("<option value='None'>None</option>");
+        $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleMethod,#GetForUpdateMethod").append("<option value='None'>None</option>");
         apiList.forEach(function (item) {
             if (item.tag === tag) {
                 $("#ListMethod,#CreateMethod,#UpdateMethod,#DeleteMethod")

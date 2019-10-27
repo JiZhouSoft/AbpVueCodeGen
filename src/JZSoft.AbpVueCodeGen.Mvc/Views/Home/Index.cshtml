@@ -65,8 +65,7 @@
                         </select>
                         <div class="form-group">
                             @Html.LabelFor(o => o.CreateDtoName)
-                            @Html.EditorFor(o => o.CreateDtoName)
-
+                            @Html.EditorFor(o => o.CreateDtoName) 
                             @Html.LabelFor(o => o.CreateParamsJsonPath)
                             <input type="text" value="CreateApi.parameters[0][3].value[0].value.refData[2].value" id="CreateParamsJsonPath" name="CreateParamsJsonPath" />
                             <button type="button" data-target="CreateParamsJsonPath" class="btn btn-info tryJson">Try</button>
@@ -74,14 +73,17 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="GetForUpdateMethod">更新数据前获取GetForUpdateMethod</label>
+                        <select class="form-control" name="GetForUpdateMethod" id="UpdateMethod">
+                        </select>
                         <label for="UpdateMethod">UpdateMethod</label>
                         <select class="form-control" name="UpdateMethod" id="UpdateMethod">
                         </select>
-
                         <div class="form-group">
                             @Html.LabelFor(o => o.UpdateDtoName)
                             @Html.EditorFor(o => o.UpdateDtoName)
                             @Html.LabelFor(o => o.UpdateParamsJsonPath)
+
                             <input type="text" value="UpdateApi.parameters[0][3].value[0].value.refData[2].value" id="UpdateParamsJsonPath" name="UpdateParamsJsonPath" />
                             <button type="button" data-target="UpdateParamsJsonPath" class="btn btn-info tryJson">Try</button>
                         </div>
@@ -138,18 +140,19 @@
                         <textarea name="tryJsonData" id="tryJsonData" style="width:100%"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>Target</label>:
-
+                        <label>Target</label>: 
                         <input type="radio" id="radJson" name="TemplateName" value="Json" checked="checked" />
                         <label for="radJson">Json</label>
+                        <input type="radio" name="TemplateName" id="radListItem" value="Filters" />
+                        <label for="radListItem">高级查询项FilterItems</label>
                         <input type="radio" name="TemplateName" id="radListItem" value="ListItem" />
-                        <label for="radListItem">ListItems</label>
+                        <label for="radListItem">列表项ListItems</label>
                         <input type="radio" name="TemplateName" id="radFormItems" value="FormItems" />
-                        <label for="radFormItems">FormItems</label>
+                        <label for="radFormItems">表单项FormItems</label>
                         <input type="radio" name="TemplateName" id="radQueryParamsDef" value="QueryParamsDef" />
-                        <label for="radQueryParamsDef">QueryParamsDef</label>
+                        <label for="radQueryParamsDef">列表查询定义QueryParamsDef</label>
                         <input type="radio" name="TemplateName" id="radQueryParamsQueryCode" value="QueryParamsQueryCode" />
-                        <label for="radQueryParamsQueryCode">QueryParamsQueryCode</label>
+                        <label for="radQueryParamsQueryCode">列表查询参数传入QueryParamsQueryCode</label>
                         <button type="button" class="btn btn-info" id="btnTryGetProp">Try</button>
                     </div>
                     <div class="form-group">
