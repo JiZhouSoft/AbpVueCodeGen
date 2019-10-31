@@ -64,7 +64,9 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             JToken token = JToken.Parse(input.Json);
             var paramDefList = new List<ParamDef>();
             var ErrorCount = 0;
-            if (input.TemplateName == TemplateType.QueryParamsDef || input.TemplateName == TemplateType.QueryParamsQueryCode)
+            if (input.TemplateName == TemplateType.QueryParamsDef
+                || input.TemplateName == TemplateType.Filters
+                || input.TemplateName == TemplateType.QueryParamsQueryCode)
             {
                 foreach (var item in token.SelectToken(input.JsonPath))
                 {
@@ -120,10 +122,10 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                 Response.ContentType = "text/plian;charset=utf-8";
                 return View(output);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                var errorResult = new { error = "JsonPath Error : " + ex };
+                return new JsonResult(errorResult);
             }
 
         }
@@ -160,15 +162,25 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             dtoNames.Add(listApi.ListResultDtoName);
             genCodeConfig.ListApi = listApi;
 
-            listApi.ListResultDtoItemName = Model.SelectToken("$.ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refName").ToString();
             if (!string.IsNullOrEmpty(input.ListItemsDtoName))
             {
                 listApi.ListResultDtoItemName = input.ListItemsDtoName;
             }
+            else
+            {
+                try
+                {
+                    listApi.ListResultDtoItemName = Model.SelectToken("$.ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refName").ToString();
+
+                }
+                catch (Exception)
+                {
+
+                    throw new Exception("ListResultDtoItemName Not Found , 它不在默认路径下：$.ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refName/r/n 请手动指定名称");
+                }
+            }
             genCodeConfig.ListApi = listApi;
             dtoNames.Add(listApi.ListResultDtoItemName);
-
-
             JToken ListReturnPropertiesDef = Model.SelectToken("$.ListApi.responses[0].value[1].value[0].value.refData[1].value[1].value[2].value[0].value.refData[1].value");
 
             if (!string.IsNullOrEmpty(input.ListPropertiesJsonPath))
@@ -221,17 +233,42 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
             if (EnableCreate)
             {
                 var createApi = new Createapi();
-                var CreateDtoName = Model.SelectToken("$.CreateApi.parameters[0][3].value[0].value.refName").ToString();
-                if (!string.IsNullOrEmpty(input.CreateDtoName))
+                if (!string.IsNullOrWhiteSpace(input.UpdateDtoName))
                 {
-                    CreateDtoName = input.CreateDtoName;
+                    createApi.RequestDtoName = input.UpdateDtoName;
                 }
-                createApi.RequestDtoName = CreateDtoName;
-
+                else
+                {
+                    var UpdateDtoNamePath = Model.SelectToken("$.CreateApi.parameters[0]");
+                    foreach (var o in UpdateDtoNamePath)
+                    {
+                        if (o["value"] != null && o["value"].Count() > 1)
+                        {
+                            var item = o["value"].FirstOrDefault();
+                            if (item.SelectToken("value.refName") != null)
+                            {
+                                createApi.RequestDtoName = item.SelectToken("value.refName").ToString();
+                            }
+                            else { continue; }
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+                //if (string.IsNullOrWhiteSpace(createApi.RequestDtoName))
+                //{
+                //    throw new Exception("未在默认路径下找到 CreateDtoName 请指定 CreateDtoName ");
+                //}
                 var CreateDtoDef = Model.SelectToken("$.CreateApi.parameters[0][3].value[0].value.refData[1].value");
                 if (!string.IsNullOrEmpty(input.CreateParamsJsonPath))
                 {
                     CreateDtoDef = Model.SelectToken(input.CreateParamsJsonPath);
+                }
+                if (CreateDtoDef == null)
+                {
+                    throw new Exception("在指定路径：未找到创建参数清单。");
                 }
                 foreach (var item in CreateDtoDef)
                 {
@@ -277,13 +314,35 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
                     }
                     updateapi.Properties.Add(paramDef);
                 }
-
-                var UpdateDtoName = Model.SelectToken("$.UpdateApi.parameters[0][3].value[0].value.refName").ToString();
                 if (!string.IsNullOrWhiteSpace(input.UpdateDtoName))
                 {
-                    dtoNames.Add(UpdateDtoName);
+                    updateapi.RequestDtoName = input.UpdateDtoName;
                 }
-                updateapi.RequestDtoName = UpdateDtoName;
+                else
+                {
+                    var UpdateDtoNamePath = Model.SelectToken("$.UpdateApi.parameters[0]");
+                    foreach (var o in UpdateDtoNamePath)
+                    {
+                        if (o["value"] != null && o["value"].Count() > 1)
+                        {
+                            var item = o["value"].FirstOrDefault();
+                            if (item.SelectToken("value.refName") != null)
+                            {
+                                updateapi.RequestDtoName = item.SelectToken("value.refName").ToString();
+                            }
+                            else { continue; }
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+                //if (string.IsNullOrWhiteSpace(updateapi.RequestDtoName))
+                //{
+                //    throw new Exception("未在默认路径下找到 CreateDtoName 请指定 CreateDtoName ");
+                //}
+                dtoNames.Add(updateapi.RequestDtoName);
                 var UpdateApiName = Model["UpdateApi"]["path"].ToString().Split('/', StringSplitOptions.RemoveEmptyEntries).Last();
                 updateapi.JsMethodName = UpdateApiName.ToLowerStart();
                 genCodeConfig.UpdateApi = updateapi;
