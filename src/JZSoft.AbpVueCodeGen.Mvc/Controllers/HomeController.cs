@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using JZSoft.AbpVueCodeGen.Mvc.Models;
 using Newtonsoft.Json.Linq;
+using System.Net.Http;
 
 namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
 {
@@ -13,6 +14,14 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
     {
         public static string ApiJsonUrl { get; set; }
 
+        public async Task<IActionResult> APIProxy()
+        {
+            HttpClient httpClient = new HttpClient();
+            var result = await httpClient.GetAsync(ApiJsonUrl);
+            var json = await result.Content.ReadAsStringAsync();
+            JToken token = JToken.Parse(json);
+            return new JsonResult(token);
+        }
         public IActionResult Index()
         {
             return View();
