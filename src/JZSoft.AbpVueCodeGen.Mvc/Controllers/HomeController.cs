@@ -14,6 +14,10 @@ namespace JZSoft.AbpVueCodeGen.Mvc.Controllers
     {
         public static string ApiJsonUrl { get; set; }
 
+        /// <summary>
+        /// 代理API 无需再配置 api跨域
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> APIProxy()
         {
             HttpClient httpClient = new HttpClient();
